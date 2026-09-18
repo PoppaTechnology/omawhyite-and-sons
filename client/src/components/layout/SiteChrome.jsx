@@ -12,8 +12,11 @@ const categoryHref = (category) => `/shop?category=${category}`;
 function IconBadge({ count }) { if (!count) return null; return <span className="icon-badge">{count > 99 ? "99+" : count}</span>; }
 
 export function DesktopHeader({ activeCategory }) {
-  const { auth, cartLines, savedIds } = useStorefront();
+  const { auth, cartLines, savedIds, signOut } = useStorefront();
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [, setLocation] = useLocation();
   const cartCount = cartLines.reduce((sum, line) => sum + Number(line.quantity || 0), 0);
+  const handleSignOut = async () => { setProfileOpen(false); await signOut(); setLocation("/"); };
   return <header className="site-header desktop-only">
     <Link href="/" className="header-logo" aria-label="Omawhiyte & Sons Dynamic Ventures home"><img src={assets.logo} alt="Omawhiyte & Sons Dynamic Ventures" /></Link>
     <nav className="desktop-nav" aria-label="Product categories">
@@ -22,7 +25,15 @@ export function DesktopHeader({ activeCategory }) {
     <div className="header-actions" aria-label="Store utilities">
       <Link href="/shop" aria-label="Search products"><Search /></Link>
       <Link href="/cart" aria-label="My cart" className="icon-badge-wrap"><ShoppingBag /><IconBadge count={cartCount} /></Link>
-      {auth?.token && <Link href="/wishlist" aria-label="My wishlist" className="icon-badge-wrap"><Heart /><IconBadge count={savedIds.length} /></Link>}<Link href="/login" aria-label="My profile"><UserRound /></Link>
+      {auth?.token && <Link href="/wishlist" aria-label="My wishlist" className="icon-badge-wrap"><Heart /><IconBadge count={savedIds.length} /></Link>}
+      <div className="profile-menu-wrap">
+        <button aria-label="My profile" aria-haspopup="true" aria-expanded={profileOpen} onClick={() => setProfileOpen((current) => !current)}><UserRound /></button>
+        {profileOpen && <div className="profile-menu-layer" onClick={() => setProfileOpen(false)}>
+          <div className="profile-menu" onClick={(event) => event.stopPropagation()}>
+            {auth?.token ? <button onClick={handleSignOut}>Sign Out</button> : <Link href="/login" onClick={() => setProfileOpen(false)}>Sign In</Link>}
+          </div>
+        </div>}
+      </div>
     </div>
   </header>;
 }
@@ -48,8 +59,9 @@ export function MobileHeader({ compact = false, cartOnly = false, title, back = 
 }
 
 function MobileMenu({ close, go }) {
-  const { auth, cartLines, savedIds } = useStorefront();
+  const { auth, cartLines, savedIds, signOut } = useStorefront();
   const cartCount = cartLines.reduce((sum, line) => sum + Number(line.quantity || 0), 0);
+  const handleSignOut = async () => { close(); await signOut(); };
   return <div className="mobile-menu-layer" onClick={close}>
     <aside className="mobile-menu" onClick={(event) => event.stopPropagation()} aria-label="Mobile navigation">
       <button className="menu-close" onClick={close} aria-label="Close menu"><X /></button>
@@ -60,7 +72,7 @@ function MobileMenu({ close, go }) {
         <span className="menu-rule" />
         <button onClick={() => go("/cart")}>My Cart{cartCount > 0 && <span className="menu-count">{cartCount}</span>}</button>
         {auth?.token && <button onClick={() => go("/wishlist")}>My Wishlist{savedIds.length > 0 && <span className="menu-count">{savedIds.length}</span>}</button>}
-        <button onClick={() => go("/login")}>My Profile</button>
+        {auth?.token ? <button onClick={handleSignOut}>Sign Out</button> : <button onClick={() => go("/login")}>Sign In</button>}
       </nav>
     </aside>
   </div>;
