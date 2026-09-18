@@ -1,0 +1,14 @@
+/** Oma & Sons integration: existing Login visual surface backed by the Django token endpoint. */
+import { useEffect, useState } from "react";
+import { Link, useLocation, useSearch } from "wouter";
+import { Eye, EyeOff } from "lucide-react";
+import { assets } from "../data/assets";
+import { useStorefront } from "../state/StorefrontContext";
+
+export default function LoginPage() {
+  const [, setLocation] = useLocation(); const search = useSearch(); const { signIn } = useStorefront(); const [show, setShow] = useState(false); const [email, setEmail] = useState(""); const [password, setPassword] = useState(""); const [remember, setRemember] = useState(true); const [error, setError] = useState(""); const [busy, setBusy] = useState(false);
+  const params = new URLSearchParams(search); const saveProduct = params.get("reason") === "save" ? params.get("product") : null;
+  useEffect(() => { if (saveProduct) window.dispatchEvent(new CustomEvent("oma-notice", { detail: { message: "Sign in to save this product.", tone: "success" } })); }, [saveProduct]);
+  const submit = async () => { setBusy(true); setError(""); try { await signIn({ email, password }, remember); setLocation(saveProduct ? `/product/${saveProduct}?autosave=1` : "/"); } catch (e) { setError(e.message); } finally { setBusy(false); } };
+  return <main className="auth-page"><section className="auth-card"><Link href="/" className="auth-logo" aria-label="Omawhiyte & Sons Dynamic Ventures home"><img src={assets.logo} alt="Omawhiyte & Sons Dynamic Ventures" /></Link><h1 className="desktop-only">Sign in to your account</h1><h1 className="mobile-only">Welcome Back</h1><p className="mobile-only">Sign in to your account</p><label className="form-field"><span>Email Address</span><input value={email} onChange={(event) => setEmail(event.target.value)} placeholder="you@example.com" type="email" /></label><label className="form-field password-field"><span>Password <button type="button" onClick={() => {}}>Forgot password?</button></span><input value={password} onChange={(event) => setPassword(event.target.value)} type={show ? "text" : "password"} placeholder="••••••••" /><button className="password-toggle" type="button" onClick={() => setShow(!show)} aria-label={show ? "Hide password" : "Show password"}>{show ? <EyeOff /> : <Eye />}</button></label><label className="simple-check"><input type="checkbox" checked={remember} onChange={(event) => setRemember(event.target.checked)} /> Remember me</label>{error && <p className="form-error">{error}</p>}<button className="primary-button" disabled={busy} onClick={submit}>{busy ? "Signing in…" : "Log In"}</button><div className="or-divider"><span />OR<span /></div><p className="auth-switch">Don't have an account? <Link href={saveProduct ? `/sign-up?reason=save&product=${saveProduct}` : "/sign-up"}>Sign Up</Link></p></section></main>;
+}
