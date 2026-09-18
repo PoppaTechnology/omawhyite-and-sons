@@ -3,7 +3,7 @@ import { Heart, ShoppingBag } from "lucide-react";
 import { useLocation } from "wouter";
 import { useStorefront } from "../../state/StorefrontContext";
 import { categoryLabels } from "../../data/products";
-import { api, resolveProductImage } from "../../lib/api";
+import { api, resolveProductImage, handleImageError } from "../../lib/api";
 import { formatNaira } from "../../utils/pricing";
 
 export function ProductCard({ product, variant = "shop", showCart = false }) {
@@ -29,7 +29,7 @@ export function ProductCard({ product, variant = "shop", showCart = false }) {
     <div className="product-image-wrap">
       {product.badge && <span className="product-badge">{product.badge}</span>}
       {variant === "shop" && <button className={`heart-button ${saved ? "is-saved" : ""}`} aria-label={`Save ${product.name}`} onClick={handleHeart}><Heart size={16} fill={saved ? "currentColor" : "none"} /></button>}
-      <img src={image} alt={product.name} />
+      <img src={image} alt={product.name} onError={handleImageError} />
     </div>
     <div className="product-card-copy">
       <h3>{product.name}</h3>

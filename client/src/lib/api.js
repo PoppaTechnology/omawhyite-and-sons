@@ -43,6 +43,22 @@ export function resolveProductImage(product) {
   return filename ? resolveAssetUrl(`/media/products/${filename}`) : resolveAssetUrl(product.image);
 }
 
+// Fallback shown in place of a product image that fails to load (e.g. missing/unreachable
+// backend media file). Kept as a plain inline SVG data URI so it never itself performs a
+// network request and can never fail to "load".
+export const PRODUCT_IMAGE_FALLBACK =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Crect width='200' height='200' fill='%23f3f2ef'/%3E%3Cg fill='none' stroke='%23c7c5bf' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='38' y='52' width='124' height='96' rx='6'/%3E%3Ccircle cx='74' cy='84' r='10'/%3E%3Cpath d='M38 130l34-30 26 22 30-34 34 40'/%3E%3C/g%3E%3C/svg%3E";
+
+// Attach to an <img onError={handleImageError}>. Swaps a broken/missing image for the
+// shared placeholder exactly once, so a failing image never leaves a broken-icon box and
+// never loops (a failing fallback would otherwise re-trigger onError indefinitely).
+export function handleImageError(event) {
+  const img = event.currentTarget;
+  if (img.dataset.fallbackApplied) return;
+  img.dataset.fallbackApplied = "true";
+  img.src = PRODUCT_IMAGE_FALLBACK;
+}
+
 function errorMessage(payload, fallback) {
   if (!payload) return fallback;
   if (typeof payload === "string") return payload;
