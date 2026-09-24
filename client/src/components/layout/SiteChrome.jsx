@@ -1,7 +1,7 @@
 /** Figma fidelity: shared paper-white retail chrome; Ink Black rules, restrained controls, supplied logo only. */
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { Menu, Search, ShoppingBag, UserRound, Heart, X, ChevronDown, MessageCircle, CreditCard } from "lucide-react";
+import { Menu, Search, ShoppingBag, UserRound, Heart, X, ChevronDown, MessageCircle, CreditCard, ArrowLeft } from "lucide-react";
 import { useStorefront } from "../../state/StorefrontContext";
 import { assets } from "../../data/assets";
 import { categoryLabels } from "../../data/products";
@@ -45,7 +45,7 @@ export function MobileHeader({ compact = false, cartOnly = false, title, back = 
   const cartCount = cartLines.reduce((sum, line) => sum + Number(line.quantity || 0), 0);
   const go = (href) => { setOpen(false); setLocation(href); };
   if (compact) return <header className="mobile-compact-header mobile-only">
-    {back ? <button aria-label="Go back" onClick={() => window.history.back()}>←</button> : <button aria-label="Open menu" onClick={() => setOpen(true)}><Menu /></button>}
+    {back ? <button aria-label="Go back" onClick={() => window.history.back()}><ArrowLeft /></button> : <button aria-label="Open menu" onClick={() => setOpen(true)}><Menu /></button>}
     <Link href="/" className="mobile-compact-logo" aria-label="Omawhiyte & Sons Dynamic Ventures home"><img src={assets.logo} alt="Omawhiyte & Sons Dynamic Ventures" /></Link>
     <Link href="/cart" aria-label="Cart" className="icon-badge-wrap"><ShoppingBag /><IconBadge count={cartCount} /></Link>
     {open && <MobileMenu close={() => setOpen(false)} go={go} />}
