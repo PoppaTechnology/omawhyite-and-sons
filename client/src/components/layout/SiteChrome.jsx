@@ -98,7 +98,7 @@ export function Footer() {
 }
 
 export function CheckoutHeader() {
-  return <header className="checkout-header"><Link href="/" aria-label="Omawhiyte & Sons Dynamic Ventures home"><img src={assets.logo} alt="Omawhiyte & Sons Dynamic Ventures" /></Link><span><ShoppingBag size={12} /> SECURE CHECKOUT</span></header>;
+  return <header className="checkout-header"><button aria-label="Go back" className="checkout-back" onClick={() => window.history.back()}><ArrowLeft /></button><span><ShoppingBag size={12} /> SECURE CHECKOUT</span></header>;
 }
 
 export function WhatsAppWidget() {
