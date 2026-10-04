@@ -93,17 +93,18 @@ export function DesktopHeader({ activeCategory }) {
             <UserRound />
           </button>
           {auth?.token && profileOpen && (
-            <div
-              className="profile-menu-layer"
-              onClick={() => setProfileOpen(false)}
-            >
+            <>
+              <div
+                className="profile-menu-layer"
+                onClick={() => setProfileOpen(false)}
+              />
               <div
                 className="profile-menu"
                 onClick={event => event.stopPropagation()}
               >
                 <button onClick={handleSignOut}>Sign Out</button>
               </div>
-            </div>
+            </>
           )}
         </div>
       </div>
